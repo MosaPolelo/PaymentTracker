@@ -1,5 +1,6 @@
 package com.example.paymenttracker
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,11 +20,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val sharedText = extractSharedText(intent)
         setContent {
             PaymentTrackerTheme {
-                AppNav(vm) // <-- IMPORTANT: no named parameter
+                AppNav(vm, initialSharedText = sharedText)
             }
+        }
+    }
+
+    private fun extractSharedText(intent: Intent?): String {
+        if (intent?.action != Intent.ACTION_SEND) return ""
+        val mimeType = intent.type ?: return ""
+        return when {
+            mimeType.startsWith("text/") ->
+                intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty()
+            else -> ""  // image/* and pdf handled by file picker in InvoiceImportScreen
         }
     }
 }

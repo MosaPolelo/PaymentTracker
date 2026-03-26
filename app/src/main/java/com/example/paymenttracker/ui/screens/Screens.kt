@@ -890,7 +890,8 @@ fun BankingDetailsScreen() {
 fun SettingsScreen(
     vm: PaymentsViewModel,
     onScanConfigQr: () -> Unit,
-    onOpenGmailSync: () -> Unit
+    onOpenGmailSync: () -> Unit,
+    onOpenInvoiceImport: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var status by remember { mutableStateOf("Not connected") }
@@ -972,12 +973,30 @@ fun SettingsScreen(
                         "Scan Gmail for invoices, payment confirmations and finance-like emails.",
                         style = MaterialTheme.typography.bodyMedium
                     )
-
                     Button(
                         onClick = onOpenGmailSync,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Open Gmail Sync")
+                    }
+                }
+            }
+
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text("Import Invoice", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "Import from a screenshot, PDF, or paste email text to extract and save a payment.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Button(
+                        onClick = onOpenInvoiceImport,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Import Invoice / Receipt")
                     }
                 }
             }

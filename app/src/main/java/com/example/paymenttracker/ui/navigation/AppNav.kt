@@ -15,6 +15,7 @@ import com.example.paymenttracker.ui.screens.ConfigScanScreen
 import com.example.paymenttracker.ui.screens.DashboardScreen
 import com.example.paymenttracker.ui.screens.EditPaymentScreen
 import com.example.paymenttracker.ui.screens.GmailSyncScreen
+import com.example.paymenttracker.ui.screens.InvoiceImportScreen
 import com.example.paymenttracker.ui.screens.PaymentsScreen
 import com.example.paymenttracker.ui.screens.SettingsScreen
 import com.example.paymenttracker.ui.screens.SlipViewerScreen
@@ -30,10 +31,11 @@ object Routes {
     const val CONFIG_QR = "config_qr"
     const val VIEW_SLIP = "view_slip"
     const val GMAIL_SYNC = "gmail_sync"
+    const val INVOICE_IMPORT = "invoice_import"
 }
 
 @Composable
-fun AppNav(vm: PaymentsViewModel) {
+fun AppNav(vm: PaymentsViewModel, initialSharedText: String = "") {
     val navController = rememberNavController()
 
     Scaffold(
@@ -41,7 +43,7 @@ fun AppNav(vm: PaymentsViewModel) {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.DASHBOARD,
+            startDestination = if (initialSharedText.isNotBlank()) Routes.INVOICE_IMPORT else Routes.DASHBOARD,
             modifier = Modifier.padding(padding)
         ) {
             composable(Routes.DASHBOARD) {
@@ -98,6 +100,9 @@ fun AppNav(vm: PaymentsViewModel) {
                     },
                     onOpenGmailSync = {
                         navController.navigate(Routes.GMAIL_SYNC)
+                    },
+                    onOpenInvoiceImport = {
+                        navController.navigate(Routes.INVOICE_IMPORT)
                     }
                 )
             }
@@ -114,6 +119,15 @@ fun AppNav(vm: PaymentsViewModel) {
                 GmailSyncScreen(
                     vm = vm,
                     onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Routes.INVOICE_IMPORT) {
+                InvoiceImportScreen(
+                    vm = vm,
+                    initialText = initialSharedText,
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() }
                 )
             }
 
