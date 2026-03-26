@@ -64,6 +64,9 @@ class GmailSyncService {
                 .put("afterDate", afterDate)
                 .put("beforeDate", beforeDate)
 
+            Log.d("GMAIL_SYNC", "POST URL: $scriptUrl")
+            Log.d("GMAIL_SYNC", "REQUEST BODY: ${body}")
+
             val requestBody = body.toString().toRequestBody(jsonMedia)
 
             val request = Request.Builder()
@@ -79,7 +82,7 @@ class GmailSyncService {
 
                 if (!response.isSuccessful) {
                     return Result.failure(
-                        Exception("HTTP ${response.code}: $rawText")
+                        Exception("HTTP ${response.code} | URL: $scriptUrl | $rawText")
                     )
                 }
 
@@ -87,8 +90,10 @@ class GmailSyncService {
 
                 val ok = json.optBoolean("ok", false)
                 if (!ok) {
-                    val message = json.optString("message", "Unknown Gmail sync error")
-                    return Result.failure(Exception(message))
+                    val errMsg = json.optString("error",
+                        json.optString("message", "Unknown error from Apps Script"))
+                    Log.e("GMAIL_SYNC", "Apps Script error: $errMsg | URL: $scriptUrl")
+                    return Result.failure(Exception("$errMsg\n[URL: $scriptUrl]"))
                 }
 
                 val emailsArray = json.optJSONArray("emails") ?: JSONArray()
